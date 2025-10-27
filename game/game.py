@@ -140,6 +140,12 @@ class Game:
             weights = [pow(1/3, room.rarity) for room in filtered_rooms]
 
             return random.choices(filtered_rooms, weights=weights, k=1)[0]
+        
+    
+    
+    
+    
+    
     # --- actions de base ---
     def open_or_place(self, d: Direction) -> bool:
         """

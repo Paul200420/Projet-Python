@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Callable, Optional, Set
 from enums.direction import Direction
+from enums.room_colors import CouleurPiece
 
 @dataclass
 class Room:
@@ -13,7 +14,18 @@ class Room:
     _possible_doors: Set[Direction] = field(default_factory=set)
     _placement_condition: Optional[Callable[[int, int], bool]] = None
     _special_effect: Optional[Callable[["Game", int, int], None]] = None
+    
+    _couleur: CouleurPiece = CouleurPiece.BLEUE  
+    _effet_texte: str = ""
 
+    @property
+    def couleur(self) -> CouleurPiece:
+        return self._couleur
+
+    @property
+    def effet_texte(self) -> str:
+        return self._effet_texte
+    
     @property
     def name(self) -> str:
         return self._name
