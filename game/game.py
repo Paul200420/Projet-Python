@@ -12,7 +12,7 @@ import random
 from rooms.special_rooms import (
     Kitchen, Pantry, Garden, LockerRoom,
     TreasureRoom, Armory, Library, PlainRoom,
-    EntranceHall, Antechamber
+     EntranceHall, Antechamber
 )
 from objects.consumable import Apple, Banana, Cake, Sandwich, Meal
 from objects.permanent import ShovelObj, HammerObj, LockpickKitObj, MetalDetectorObj, RabbitFootObj
@@ -181,13 +181,18 @@ class Game:
         # Crée la porte aller si autorisée
         cur_cell = self.manor.cell(cur)
         if d not in cur_cell.doors:
-            cur_cell.doors[d] = Door(_lock=LockLevel.UNLOCKED, _leads_to=nxt)
+            # Niveau de verrouillage basé sur la rangée de la salle cible
+            lock_level = self._random_lock_for_row(nxt.r)#On tire un niveau de verrou pour la porte aller en fonction de la rangée de la salle cible (plus on monte, plus c’est verrouillé).
+            cur_cell.doors[d] = Door(_lock=lock_level, _leads_to=nxt)
 
         # Crée la porte retour si autorisée
         back = {Direction.UP: Direction.DOWN, Direction.DOWN: Direction.UP,
                 Direction.LEFT: Direction.RIGHT, Direction.RIGHT: Direction.LEFT}[d]
+        
         if back not in tgt_cell.doors and back in tgt_cell.room.possible_doors:
-            tgt_cell.doors[back] = Door(_lock=LockLevel.UNLOCKED, _leads_to=cur)
+            #cohérence : on met le même niveau de verrou sur la porte retour
+            lock_level_back = cur_cell.doors[d].lock
+            tgt_cell.doors[back] = Door(_lock=lock_level_back, _leads_to=cur)
 
         return True
 
@@ -195,19 +200,27 @@ class Game:
         """Se déplacer via une porte ouverte; consomme 1 step."""
         cur_cell = self.manor.cell(self.player.pos)
         door = cur_cell.doors.get(d)
+        cur = self.player.pos
+        
         if not door:
             return False
         if not door.can_open(self.player.inventory):
             return False
         if not door.open(self.player.inventory):
             return False
+        #2.6 modif
+         #Une fois traversée, la porte est considérée ouverte définitivement dans les deux sens
+        self._unlock_both_sides(cur, d)
+
         # Consomme 1 pas
         if self.player.inventory.steps <= 0:
             return False
         self.player.inventory.steps -= 1
-        # Déplacement
+
+    # Déplacement
         self.player.pos = door.leads_to
-        # Hook d'entrée
+
+    # Effet de salle à l'entrée
         new_cell = self.manor.cell(self.player.pos)
         if new_cell.room:
             new_cell.room.on_enter(self, self.player.pos.r, self.player.pos.c)
@@ -236,3 +249,73 @@ class Game:
         if getattr(obj, "consumed", False):
             cell.room.contents.pop(0)
         return msg
+
+    ######.    2.6
+    def _random_lock_for_row(self, row: int) -> LockLevel:
+    #Logique proposé :
+    #Tire aléatoirement le niveau de verrouillage d'une porte en fonction de la rangée (0 en haut → 4 en bas).
+    #Rangée 4 (départ) : toujours UNLOCKED
+    #Rangée 0 (antichambre) : toujours DOUBLE_LOCKED
+    #Intermédiaires : proba croissantes de LOCKED / DOUBLE_LOCKED en remontant
+    
+    # Sécurité : bornes
+        row = max(0, min(self.manor.rows - 1, row))
+
+        if row == self.manor.rows - 1:  # rangée 4 (bas, départ)
+            return LockLevel.UNLOCKED
+        if row == 0:                    # rangée 0 (haut, antichambre)
+            return LockLevel.DOUBLE_LOCKED
+
+    # Probabilités intermédiaires (r=3,2,1)
+    # Tu peux ajuster ces chiffres si tu veux un jeu plus dur/facile.
+    # r=3 (juste au-dessus du départ)
+        if row == 3:
+            p = random.random()
+            if p < 0.70: return LockLevel.UNLOCKED
+            else:        
+                return LockLevel.LOCKED
+
+    # r=2 (milieu)
+        if row == 2:
+            p = random.random()
+            if p < 0.40: 
+                return LockLevel.UNLOCKED
+            elif p < 0.90: 
+                return LockLevel.LOCKED
+            else:          
+                return LockLevel.DOUBLE_LOCKED
+
+    # r=1 (avant-dernier étage)
+        if row == 1:
+            p = random.random()
+            if p < 0.20: 
+                return LockLevel.UNLOCKED
+            elif p < 0.70: 
+                return LockLevel.LOCKED
+            else:          
+                return LockLevel.DOUBLE_LOCKED
+
+    # fallback (ne devrait pas arriver)
+        return LockLevel.UNLOCKED
+    def _unlock_both_sides(self, from_coord: Coord, d: Direction) -> None:
+    #"""Met la porte traversée ET sa porte jumelle en UNLOCKED."""
+        cur_cell = self.manor.cell(from_coord)
+        door = cur_cell.doors.get(d)
+        if not door:
+            return
+    # Déverrouille la porte traversée
+        door.lock = LockLevel.UNLOCKED
+
+    # Déverrouille la porte jumelle (sens inverse) si elle existe
+        back = {
+            Direction.UP: Direction.DOWN,
+            Direction.DOWN: Direction.UP,
+            Direction.LEFT: Direction.RIGHT,
+            Direction.RIGHT: Direction.LEFT,
+        }[d]
+        tgt_cell = self.manor.cell(door.leads_to)
+        twin = tgt_cell.doors.get(back)
+        if twin:
+            twin.lock = LockLevel.UNLOCKED
+            
+    #########.       2.6 

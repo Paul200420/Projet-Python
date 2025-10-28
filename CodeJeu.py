@@ -314,3 +314,47 @@ class Renderer:
        self.screen.blit(surf, (x, y))
 
 
+#code game module open_or_place yanice: avant modif paul pour 2.6:
+def open_or_place(self, d: Direction) -> bool:
+        """
+        Ouvre/pose une salle adjacente dans la direction d, si possible.
+        - Vérifie le coût en gemmes et les conditions de placement
+        - Ne crée que les portes autorisées par la salle
+        - Crée des portes bidirectionnelles UNLOCKED
+        """
+        cur = self.player.pos
+        nxt = self._neighbor(cur, d)
+        if nxt is None:
+            return False
+
+        # Place la salle si absente
+        tgt_cell = self.manor.cell(nxt)
+        if tgt_cell.room is None:
+            # Générer une salle aléatoire appropriée
+            room = self.generate_random_room(nxt.r, nxt.c)
+            
+            # Vérifier si la direction demandée est possible pour cette salle
+            if d not in room.possible_doors:
+                return False
+
+            # Vérifier et déduire le coût en gemmes
+            if self.player.inventory.gems < room.gem_cost:
+                return False
+            self.player.inventory.gems -= room.gem_cost
+
+            # Placer la salle et ses objets
+            tgt_cell.room = room
+            self.spawn_objects_for_room(nxt)
+
+        # Crée la porte aller si autorisée
+        cur_cell = self.manor.cell(cur)
+        if d not in cur_cell.doors:
+            cur_cell.doors[d] = Door(_lock=LockLevel.UNLOCKED, _leads_to=nxt)
+
+        # Crée la porte retour si autorisée
+        back = {Direction.UP: Direction.DOWN, Direction.DOWN: Direction.UP,
+                Direction.LEFT: Direction.RIGHT, Direction.RIGHT: Direction.LEFT}[d]
+        if back not in tgt_cell.doors and back in tgt_cell.room.possible_doors:
+            tgt_cell.doors[back] = Door(_lock=LockLevel.UNLOCKED, _leads_to=cur)
+
+        return True
