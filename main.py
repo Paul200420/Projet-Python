@@ -1,28 +1,70 @@
+import pygame
 from world.manor import Manor
 from game.game import Game
+from renderer import Renderer
 from enums.direction import Direction
 from items.permanent_item import PermanentItem
 
 def main():
+    pygame.init()
+
     manor = Manor()
     game = Game(manor)
 
-    # Démo : on ajoute un kit de crochetage au joueur (montre l’usage des permanents)
+    # Optionnel : donner un outil permanent de test
     game.player.inventory.add_tool(PermanentItem.LOCKPICK_KIT)
 
-    print("Start:", game.player.pos, "steps:", game.player.inventory.steps)
+    renderer = Renderer(game)
 
-    # Explore vers le haut: ouvre/pose puis move
-    if game.open_or_place(Direction.UP):
-        moved = game.move(Direction.UP)
-        print("Move UP:", moved, "pos:", game.player.pos, "steps:", game.player.inventory.steps)
+    running = True
+    while running:
+        renderer.clock.tick(25)  # limite FPS ~25
 
-    # On continue à monter jusqu'à la ligne de l'exit
-    while game.player.pos.r > game.manor.goal.r and game.player.inventory.steps > 0:
-        game.open_or_place(Direction.UP)
-        game.move(Direction.UP)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    print("Reached exit?", game.reached_exit(), "pos:", game.player.pos, "steps:", game.player.inventory.steps)
+            # ---- CLAVIER ----
+            if event.type == pygame.KEYDOWN:
+
+                # Quitter avec ESC
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+
+                # Déplacement joueur
+                if event.key == pygame.K_UP:
+                    renderer.current_dir = Direction.UP
+                    if game.open_or_place(Direction.UP):
+                        msg = game.move(Direction.UP)
+                        renderer.show_message(str(msg))
+
+                if event.key == pygame.K_DOWN:
+                    renderer.current_dir = Direction.DOWN
+                    if game.open_or_place(Direction.DOWN):
+                        msg = game.move(Direction.DOWN)
+                        renderer.show_message(str(msg))
+
+                if event.key == pygame.K_LEFT:
+                    renderer.current_dir = Direction.LEFT
+                    if game.open_or_place(Direction.LEFT):
+                        msg = game.move(Direction.LEFT)
+                        renderer.show_message(str(msg))
+
+                if event.key == pygame.K_RIGHT:
+                    renderer.current_dir = Direction.RIGHT
+                    if game.open_or_place(Direction.RIGHT):
+                        msg = game.move(Direction.RIGHT)
+                        renderer.show_message(str(msg))
+
+                # ---- INTERACTION OBJET : F ----
+                if event.key == pygame.K_f:
+                    result = game.interact_with_current_object()
+                    renderer.show_message(result)
+
+        renderer.draw()
+
+    pygame.quit()
+
 
 if __name__ == "__main__":
     main()
