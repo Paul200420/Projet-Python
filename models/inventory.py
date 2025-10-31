@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Set
+from typing import Set, Type
 from items.permanent_item import PermanentItem
 
 @dataclass
@@ -68,7 +68,15 @@ class Inventory:
         return True
 
     def add_tool(self, tool: PermanentItem) -> None:
+        """Ajoute un outil permanent à l'inventaire."""
         self._tools.add(tool)
 
     def has_tool(self, tool: PermanentItem) -> bool:
+        """Vrai si l'outil exact (instance) est présent."""
         return tool in self._tools
+
+    # --- ✅ NOUVEAU : utile pour tester par CLASSE d'outil (RabbitFootObj, MetalDetectorObj, etc.) ---
+    def has_tool_type(self, cls: Type[PermanentItem]) -> bool:
+        """Vrai si l'inventaire contient au moins un outil qui est instance de `cls`."""
+        return any(isinstance(t, cls) for t in self._tools)
+
