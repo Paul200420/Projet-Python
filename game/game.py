@@ -250,3 +250,26 @@ class Game:
         self.current_draw_choices = []
         self.current_draw_target = None
         self.game_state = "playing"
+    # =====================================================
+    # 🔥 INTERACTION OBJETS (Coffre / Casier / Spot)
+    # =====================================================
+    def interact_with_current_object(self):
+        cell = self.manor.cell(self.player.pos)
+        room = cell.room
+        if not room or not room.contents:
+            return "Rien à interagir ici."
+
+        # On cible le premier objet interactif de la pièce
+        for obj in list(room.contents):
+            if hasattr(obj, "on_interact"):
+                result = obj.on_interact(self)
+
+                if getattr(obj, "consumed", False):
+                    try:
+                        room.contents.remove(obj)
+                    except:
+                        pass
+
+                return result
+
+        return "Aucun objet interactif ici."
