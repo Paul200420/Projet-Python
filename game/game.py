@@ -106,20 +106,6 @@ class Game:
             return None
         return nxt
 
-    def _has_tool_type(self, cls) -> bool:
-        """Compat avec Inventory: utilise has_tool_type si présent, sinon parcourt le set tools."""
-        inv = self.player.inventory
-        if hasattr(inv, "has_tool_type"):
-            try:
-                return inv.has_tool_type(cls)  # type: ignore[attr-defined]
-            except Exception:
-                pass
-        tools = getattr(inv, "tools", set())
-        try:
-            return any(isinstance(t, cls) for t in tools)
-        except Exception:
-            return False
-
     # --- Butin (Section 2.8) : à brancher plus tard ---
     def open_container_content(self, container_type: str) -> List['GameObject']:
         """Tire aléatoirement le contenu d'un conteneur. (Actuellement non branché pour éviter les erreurs)"""
@@ -160,14 +146,14 @@ class Game:
         # --- Effets globaux (Patte de lapin / Détecteur de métaux) ---
         # Chance de coffre (Patte de lapin ↑)
         base_chest_chance = 0.20
-        if self._has_tool_type(RabbitFootObj):
+        if self.player.inventory.has_tool_type(RabbitFootObj):
             base_chest_chance *= 1.3
         if random.random() < base_chest_chance:
             room.contents.append(Chest())
 
         # Chance de trouver une clé (Détecteur ↑)
         base_key_chance = 0.05
-        if self._has_tool_type(MetalDetectorObj):
+        if self.player.inventory.has_tool_type(MetalDetectorObj):
             base_key_chance *= 2.0
         if random.random() < base_key_chance:
             # Créditer directement l’inventaire (simple et fiable)
