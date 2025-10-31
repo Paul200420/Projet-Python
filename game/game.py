@@ -14,7 +14,8 @@ from models.room_deck_item import RoomDeckItem # [NOUVEAU] Doit être créé dan
 from models.room import Room 
 from enums.room_colors import CouleurPiece 
 
-from rooms.special_rooms import (
+from rooms.room_base import Room
+from rooms.special_room import (
     Kitchen, Pantry, Garden, LockerRoom,
     TreasureRoom, Armory, Library, PlainRoom,
     EntranceHall, Antechamber
