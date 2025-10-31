@@ -21,7 +21,7 @@ from rooms.special_room import (
     EntranceHall, Antechamber
 )
 
-# Objets dans les rooms
+# Objets dans les rooms (spawn)
 from objects.consumable import Apple, Banana, Cake, Sandwich, Meal
 from objects.permanent import ShovelObj, HammerObj, LockpickKitObj, MetalDetectorObj, RabbitFootObj
 from objects.interactive import Chest, DigSpot, Locker
@@ -29,7 +29,7 @@ from objects.interactive import Chest, DigSpot, Locker
 # Deck
 from models.room_deck_item import RoomDeckItem
 
-# Enum des outils permanents stockés dans l'inventaire
+# Enum des outils stockés dans l'inventaire
 from items.permanent_item import PermanentItem
 
 
@@ -47,7 +47,15 @@ LOOT_TABLES = {
         "Key": 0.20,
         "Food_Steps": 0.15,
         "PermanentItem_Random": 0.05,
-    }
+    },
+    # Décommente si tu veux un loot spécifique pour les casiers :
+    # "Locker": {
+    #     "Empty": 0.25,
+    #     "Key": 0.35,
+    #     "Gold": 0.20,
+    #     "Die": 0.10,
+    #     "PermanentItem_Random": 0.10,
+    # }
 }
 
 
