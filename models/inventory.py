@@ -1,7 +1,9 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Set, Type
+from typing import Set
+
 from items.permanent_item import PermanentItem
+
 
 @dataclass
 class Inventory:
@@ -11,8 +13,11 @@ class Inventory:
     _gems: int = 2
     _keys: int = 1
     _dice: int = 0
-    # Permanents
+
+    # Permanents (Outils, bonus, etc.)
     _tools: Set[PermanentItem] = field(default_factory=set)
+
+    # ========= PROPRIÉTÉS =========
 
     @property
     def steps(self) -> int:
@@ -58,9 +63,13 @@ class Inventory:
     def tools(self) -> Set[PermanentItem]:
         return self._tools
 
-    # --- utilitaires de base ---
+    # ========= MÉTHODES UTILITAIRES =========
+
     def spend(self, resource: str, amount: int) -> bool:
-        """Tente de dépenser `amount` de (steps|gold|gems|keys|dice)."""
+        """
+        Tente de dépenser steps|gold|gems|keys|dice.
+        Renvoie True si OK, False sinon.
+        """
         val = getattr(self, resource)
         if val < amount:
             return False
@@ -68,15 +77,15 @@ class Inventory:
         return True
 
     def add_tool(self, tool: PermanentItem) -> None:
-        """Ajoute un outil permanent à l'inventaire."""
+        """Ajoute un outil permanent (Enum)"""
         self._tools.add(tool)
 
     def has_tool(self, tool: PermanentItem) -> bool:
-        """Vrai si l'outil exact (instance) est présent."""
+        """Vrai si tu possèdes EXACTEMENT cet outil"""
         return tool in self._tools
 
-    # --- ✅ NOUVEAU : utile pour tester par CLASSE d'outil (RabbitFootObj, MetalDetectorObj, etc.) ---
-    def has_tool_type(self, cls: Type[PermanentItem]) -> bool:
-        """Vrai si l'inventaire contient au moins un outil qui est instance de `cls`."""
-        return any(isinstance(t, cls) for t in self._tools)
-
+    def has_tool_type(self, tool_enum: PermanentItem) -> bool:
+        """
+        Compatibilité avec Game: self.player.inventory.has_tool_type(...)
+        """
+        return tool_enum in self._tools
