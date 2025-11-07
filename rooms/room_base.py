@@ -1,11 +1,12 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Callable, Optional, Set
+from abc import ABC, abstractmethod  # ✅ ajouté pour l’abstraction
 from enums.direction import Direction
 from enums.room_colors import CouleurPiece
 
 @dataclass
-class Room:
+class Room(ABC):  # ✅ héritage de ABC pour rendre la classe abstraite
     _name: str
     _contents: List["GameObject"] = field(default_factory=list)
     _image_path: str = ""
@@ -99,7 +100,8 @@ class Room:
             return True
         return self._placement_condition(r, c)
 
+    # méthode abstraite 
+    @abstractmethod
     def on_enter(self, game: "Game", r: int, c: int) -> None:
-        """Hook d'entrée, exécute l'effet spécial si présent."""
-        if self._special_effect is not None:
-            self._special_effect(game, r, c)
+        """Méthode d’entrée à implémenter dans chaque sous-classe."""
+        pass

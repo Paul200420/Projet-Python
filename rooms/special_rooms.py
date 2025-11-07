@@ -22,6 +22,9 @@ class EntranceHall(Room):
             _couleur=CouleurPiece.BLEUE,
             _effet_texte="Aucun effet."
         )
+    def on_enter(self, game: "Game", r: int, c: int) -> None:
+        
+        pass
 
 @dataclass
 class PlainRoom(Room):
@@ -36,6 +39,9 @@ class PlainRoom(Room):
             _couleur=CouleurPiece.BLEUE,
             _effet_texte="Aucun effet."
         )
+    def on_enter(self, game: "Game", r: int, c: int) -> None:
+      
+        pass
 
 @dataclass
 class Kitchen(Room):
@@ -86,6 +92,8 @@ class LockerRoom(Room):
             _couleur=CouleurPiece.BLEUE,
             _effet_texte="Peut contenir des casiers à ouvrir."
         )
+    def on_enter(self, game: "Game", r: int, c: int) -> None:  
+        pass
 
 @dataclass
 class TreasureRoom(Room):
@@ -148,6 +156,8 @@ class Armory(Room):
             _couleur=CouleurPiece.JAUNE,  
             _effet_texte="Peut obtenir des objets permanents."
         )
+    def on_enter(self, game: "Game", r: int, c: int) -> None:  
+        pass
 
 @dataclass
 class Library(Room):
