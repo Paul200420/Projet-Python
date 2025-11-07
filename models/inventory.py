@@ -1,9 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Set
-
 from items.permanent_item import PermanentItem
-
 
 @dataclass
 class Inventory:
@@ -11,13 +9,12 @@ class Inventory:
     _steps: int = 72
     _gold: int = 0
     _gems: int = 2
-    _keys: int = 1
-    _dice: int = 0
-
-    # Permanents (Outils, bonus, etc.)
+    _keys: int = 0
+    _dice: int = 1
+    # Permanents
     _tools: Set[PermanentItem] = field(default_factory=set)
-
-    # ========= PROPRIÉTÉS =========
+    # Compteur pour Small Business
+    _small_business_count: int = 0
 
     @property
     def steps(self) -> int:
@@ -63,13 +60,9 @@ class Inventory:
     def tools(self) -> Set[PermanentItem]:
         return self._tools
 
-    # ========= MÉTHODES UTILITAIRES =========
-
+    # --- utilitaires de base ---
     def spend(self, resource: str, amount: int) -> bool:
-        """
-        Tente de dépenser steps|gold|gems|keys|dice.
-        Renvoie True si OK, False sinon.
-        """
+        """Tente de dépenser `amount` de (steps|gold|gems|keys|dice)."""
         val = getattr(self, resource)
         if val < amount:
             return False
@@ -77,15 +70,22 @@ class Inventory:
         return True
 
     def add_tool(self, tool: PermanentItem) -> None:
-        """Ajoute un outil permanent (Enum)"""
         self._tools.add(tool)
 
     def has_tool(self, tool: PermanentItem) -> bool:
-        """Vrai si tu possèdes EXACTEMENT cet outil"""
         return tool in self._tools
 
-    def has_tool_type(self, tool_enum: PermanentItem) -> bool:
-        """
-        Compatibilité avec Game: self.player.inventory.has_tool_type(...)
-        """
-        return tool_enum in self._tools
+    @property
+    def small_business_count(self) -> int:
+        return self._small_business_count
+
+    def add_small_business(self) -> bool:
+        """Ajoute un Small Business et vérifie s'il faut le convertir en clé."""
+        self._small_business_count += 2
+        if self._small_business_count >= 10:
+            self._small_business_count -= 10
+            self._keys += 1
+            return True  # Indique qu'une conversion a eu lieu
+        return False
+    
+

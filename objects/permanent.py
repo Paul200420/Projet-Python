@@ -49,3 +49,20 @@ class MetalDetectorObj(Permanent):
 class RabbitFootObj(Permanent):
     def __init__(self, image_path: Optional[str] = "assets/rooms/items/rabbit_foot.png"):
         super().__init__(_name="Rabbit Foot", _image_path=image_path, _tool=PermanentItem.RABBIT_FOOT)
+
+class SmallBusinessObj(Permanent):
+    """Fragment qui se transforme en clé une fois qu'on en a collecté 10."""
+    def __init__(self, image_path: Optional[str] = "assets/rooms/items/coin.png"):  # Utilisation temporaire d'une image de pièce
+        super().__init__(_name="Small Business", _image_path=image_path, _tool=PermanentItem.SMALL_BUSINESS)
+
+    def on_interact(self, game: "Game") -> str:
+        if self.consumed:
+            return f"{self.name} déjà ramassé."
+        
+        inv = game.player.inventory
+        self.consumed = True
+        
+        if inv.add_small_business():
+            return f"10 {self.name} collectés ! Transformés en 1 clé !"
+        else:
+            return f"{self.name} collecté ({inv.small_business_count}/10 pour une clé)"
