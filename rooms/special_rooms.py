@@ -40,7 +40,7 @@ class EntranceHall(Room):
 
 @dataclass
 class PlainRoom(Room):
-    """Salle générique sans effet particulier."""
+    """Salle générique sans effet particulier, on peut gagner des smalls business"""
     def __init__(self):
         super().__init__(
             _name="Plain Room",
@@ -49,7 +49,7 @@ class PlainRoom(Room):
             _rarity=1,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
             _couleur=CouleurPiece.BLEUE,
-            _effet_texte="Aucun effet."
+            _effet_texte="Donnes 2 smalls business une seule fois."
         )
         self._used = False
 
@@ -316,7 +316,7 @@ class Greenhouse(Room):
             _rarity=1,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
             _couleur=CouleurPiece.VERTE,
-            _effet_texte="Atmosphère humide propice aux jardins."
+            _effet_texte="Donne 2 smalls business."
         )
         self.draw_modifiers = {"Garden": 2.0, "Pantry": 1.2}
         self.used = False
@@ -484,7 +484,7 @@ class ChamberOfMirrors(Room):
             _rarity=2,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
             _couleur=CouleurPiece.VIOLETTE,
-            _effet_texte="Ajoute 'Pool Room' au tirage (une seule fois)."
+            _effet_texte="Ajoute 'Rumpus Room' au tirage (une seule fois)."
         )
         self._done = False
 
