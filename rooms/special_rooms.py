@@ -290,7 +290,7 @@ class Furnace(Room):
             _rarity=2,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
             _couleur=CouleurPiece.ROUGE,
-            _effet_texte="Chaleur qui attire les trésors. +10 or (1 seule fois) mais perds 2 pas à chaque passage."
+            _effet_texte="Chaleur qui attire les trésors. +10 or, +7 gemmes mais perds 2 pas à chaque passage."
         )
         self.draw_modifiers = {"TreasureRoom": 1.6, "Armory": 1.3}
         self._gold_given = False
@@ -474,7 +474,7 @@ class WeightRoom(Room):
 class ChamberOfMirrors(Room):
     """
     Quand tu ENTRES dans cette salle pour la première fois,
-    elle ajoute la salle PoolRoom au catalogue de tirage.
+    elle ajoute la salle RumpusRoom au catalogue de tirage.
     """
     def __init__(self):
         super().__init__(
