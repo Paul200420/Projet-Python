@@ -48,7 +48,7 @@ class PlainRoom(Room):
             _gem_cost=0,
             _rarity=1,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
-            _couleur=CouleurPiece.BLEUE,
+            _couleur=CouleurPiece.VIOLETTE,
             _effet_texte="Donnes 2 smalls business une seule fois."
         )
         self._used = False
@@ -108,7 +108,7 @@ class Pantry(Room):
             _gem_cost=2,
             _rarity=2,
             _possible_doors={Direction.UP, Direction.DOWN},
-            _couleur=CouleurPiece.BLEUE,
+            _couleur=CouleurPiece.VIOLETTE,
             _effet_texte="Vous vous reposez (+3 pas) et obtenez 1 clé (une seule fois)."
         )
         self._used = False
@@ -151,7 +151,7 @@ class UtilityRoom(Room):
             _gem_cost=3,
             _rarity=3,
             _possible_doors={Direction.UP, Direction.DOWN},
-            _couleur=CouleurPiece.JAUNE,
+            _couleur=CouleurPiece.VIOLETTE,
             _effet_texte="+4 or et 1 clé, mais une seule fois. Pas sur la rangée de départ."
         )
         self._taken = False
@@ -212,7 +212,7 @@ class Armory(Room):
             _gem_cost=1,
             _rarity=2,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
-            _couleur=CouleurPiece.JAUNE,
+            _couleur=CouleurPiece.VERTE,
             _effet_texte="Donne 1 clé et parfois un objet permanent (1 seule fois)."
         )
         self._gave_loot = False
@@ -245,7 +245,7 @@ class Library(Room):
             _gem_cost=2,
             _rarity=2,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
-            _couleur=CouleurPiece.BLEUE,
+            _couleur=CouleurPiece.VIOLETTE,
             _effet_texte="+1 dé en entrant (une seule fois)."
         )
         self._used = False
@@ -289,7 +289,7 @@ class Furnace(Room):
             _gem_cost=0,
             _rarity=2,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
-            _couleur=CouleurPiece.ROUGE,
+            _couleur=CouleurPiece.VIOLETTE,
             _effet_texte="Chaleur qui attire les trésors. +10 or, +7 gemmes mais perds 2 pas à chaque passage."
         )
         self.draw_modifiers = {"TreasureRoom": 1.6, "Armory": 1.3}
@@ -402,7 +402,7 @@ class MaidsChamber(Room):
             _gem_cost=0,
             _rarity=1,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
-            _couleur=CouleurPiece.ROUGE,
+            _couleur=CouleurPiece.VERTE,
             _effet_texte="20% : +1 dé."
         )
         self.used=False
@@ -513,7 +513,7 @@ class RumpusRoom(Room):
             _gem_cost=1,
             _rarity=1,
             _possible_doors={Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT},
-            _couleur=CouleurPiece.BLEUE,
+            _couleur=CouleurPiece.VIOLETTE,
             _effet_texte="+8 golds en entrant (salle débloquée)."
             
         )
