@@ -17,7 +17,10 @@ TEXT_COLOR = (0, 0, 0)
 
 
 class Renderer:
+    """Gère l’affichage graphique du manoir, du joueur, de l’inventaire et des choix de salles."""
+
     def __init__(self, game, window_width: int = 1200, window_height: int = 1100, sidebar_ratio: float = 0.58):
+        """Initialise la fenêtre Pygame, les dimensions de la grille et les ressources graphiques."""
         pygame.init()
         self.game = game
 
@@ -75,6 +78,7 @@ class Renderer:
         self.selected_room_index = 0  # Index de la pièce sélectionnée
 
     def draw(self):
+        """Rafraîchit entièrement l’écran : grille, sidebar, interface de choix puis flip Pygame."""
         # Nettoyer le cache d'images si nécessaire
         if not self.game.current_room_choices:
             # Conserver uniquement les images des pièces placées et les previews
@@ -105,6 +109,7 @@ class Renderer:
         pygame.display.flip()
 
     def _draw_room_selection(self):
+        """Affiche la surcouche graphique de sélection des salles (3 cartes + reroll)."""
         # Fond semi-transparent
         s = pygame.Surface((self.w, self.h))
         s.set_alpha(128)
@@ -184,7 +189,7 @@ class Renderer:
         return [font.render(line, True, (0, 0, 0)) for line in lines]
 
     def _draw_sidebar(self):
-      
+        """Dessin du panneau latéral : inventaire, outils, info de la pièce et objets présents."""
         # largeur réellement utilisée par la grille (cases carrées)
         used_grid_w = int(self.cell_size * self.game.manor.cols)
         
@@ -303,6 +308,7 @@ class Renderer:
             self.screen.blit(err, (self.grid_w + 20, self.h - 30))
 
     def _draw_grid(self):
+        """Dessine la grille principale : cases, salles, portes et position du joueur."""
         m = self.game.manor
         for r in range(m.rows):
             for c in range(m.cols):
@@ -387,6 +393,7 @@ class Renderer:
             pygame.draw.line(self.screen, (255, 255, 255), (x + self.cell_size, y), (x + self.cell_size, y + self.cell_size), width=accent_thickness)
 
     def _action_link(self, text: str, x: int, y: int):
+        """Affiche un texte cliquable/indicatif à l’écran à la position donnée."""
         # Utilise une police existante (font_tools) pour éviter les erreurs
         surf = self.font_tools.render(text, True, (60, 100, 200))
         self.screen.blit(surf, (x, y))

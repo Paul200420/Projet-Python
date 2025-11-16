@@ -5,6 +5,7 @@ from items.permanent_item import PermanentItem
 
 @dataclass
 class Inventory:
+    """Inventaire du joueur contenant ressources, outils permanents et compteurs spéciaux."""
     # Consommables
     _steps: int = 72
     _gold: int = 0
@@ -62,7 +63,7 @@ class Inventory:
 
     # --- utilitaires de base ---
     def spend(self, resource: str, amount: int) -> bool:
-        """Tente de dépenser `amount` de (steps|gold|gems|keys|dice)."""
+        """Tente de dépenser une ressource donnée (steps, gold, gems, keys ou dice)."""
         val = getattr(self, resource)
         if val < amount:
             return False
@@ -70,9 +71,11 @@ class Inventory:
         return True
 
     def add_tool(self, tool: PermanentItem) -> None:
+        """Ajoute un outil permanent à l’inventaire."""
         self._tools.add(tool)
 
     def has_tool(self, tool: PermanentItem) -> bool:
+        """Vérifie si l’outil permanent spécifié est déjà possédé."""
         return tool in self._tools
 
     @property
@@ -80,12 +83,14 @@ class Inventory:
         return self._small_business_count
 
     def add_small_business(self) -> bool:
-        """Ajoute un Small Business et vérifie s'il faut le convertir en clé."""
+        """
+        Ajoute un fragment Small Business.
+        Transforme automatiquement 10 fragments en 1 clé.
+        Retourne True si une conversion a eu lieu.
+        """
         self._small_business_count += 2
         if self._small_business_count >= 10:
             self._small_business_count -= 10
             self._keys += 1
-            return True  # Indique qu'une conversion a eu lieu
+            return True
         return False
-    
-
