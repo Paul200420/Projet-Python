@@ -15,7 +15,7 @@ from rooms.special_rooms import (
     Armory, Library, PlainRoom,
     Furnace, Greenhouse, Solarium, Veranda, MaidsChamber,
     EntranceHall, Antechamber, WeightRoom, MasterBedroom,
-    UtilityRoom, ChamberOfMirrors, RumpusRoom   # 👈 
+    UtilityRoom, ChamberOfMirrors, RumpusRoom 
 )
 
 # objets
@@ -29,9 +29,11 @@ from items.permanent_item import PermanentItem
 
 @dataclass
 class Game:
+    """Gère l'état global de la partie (joueur, manoir, tirages de salles et objets)."""
     manor: Manor
 
     def __post_init__(self):
+        """Initialise le joueur, les salles de base et l'état des tirages."""
         # Place les rooms de base
         self.player = Player(self.manor.start)
         self.manor.cell(self.manor.start).room = EntranceHall()
@@ -54,6 +56,7 @@ class Game:
     #     nxt = Coord(coord.r + dr, coord.c + dc)
     #     return nxt if self.manor.in_bounds(nxt) else None
     def _neighbor(self, coord, direction):
+        """Retourne la coordonnée voisine dans une direction donnée ou None si hors du manoir."""
         dr, dc = Direction.delta(direction)
         nxt = Coord(coord.r + dr, coord.c + dc)
         if not self.manor.in_bounds(nxt):
@@ -64,7 +67,8 @@ class Game:
     # GESTION DES OBJETS DE SALLE
     # =============================
     def spawn_objects_for_room(self, coord):
-        # """Place automatiquement des objets dans une salle selon son type."""
+        """Place automatiquement des objets dans une salle selon son type et les modificateurs de loot."""
+ 
         cell = self.manor.cell(coord)
         room = cell.room
         if room is None:
@@ -98,7 +102,7 @@ class Game:
             return
 
         # =============================
-        # 🧑‍🍳 SALLES DE NOURRITURE
+        # SALLES DE NOURRITURE
         # =============================
         if isinstance(room, Kitchen):
             # Beaucoup de nourriture (éventuellement boostée par Veranda)
@@ -113,19 +117,19 @@ class Game:
             room.contents.append(obj)
 
         # =============================
-        # 🌿 SALLES EXTÉRIEURES
+        # SALLES EXTÉRIEURES
         # =============================
         elif isinstance(room, Garden):
             room.contents.append(DigSpot())
 
         # =============================
-        # 🔒 SALLES À CASIERS
+        # SALLES À CASIERS
         # =============================
         elif isinstance(room, LockerRoom):
             room.contents.append(Locker())
 
         # =============================
-        # 💎 SALLE TRÉSOR = UtilityRoom
+        # SALLE TRÉSOR = UtilityRoom
         # =============================
         elif isinstance(room, UtilityRoom):
             room.contents.append(Chest())
@@ -135,7 +139,7 @@ class Game:
                 room.contents.append(obj)
 
         # =============================
-        # ⚔️ ARMORY
+        # ARMORY
         # =============================
         elif isinstance(room, Armory):
             perm = [ShovelObj(), HammerObj(), LockpickKitObj(), MetalDetectorObj()]
@@ -143,7 +147,7 @@ class Game:
             room.contents.append(obj)
 
         # =============================
-        # 📚 LIBRARY
+        # LIBRARY
         # =============================
         elif isinstance(room, Library):
             rare = [RabbitFootObj(), ShovelObj(), MetalDetectorObj(), Apple()]
@@ -151,7 +155,7 @@ class Game:
             room.contents.append(obj)
 
         # =============================
-        # 🧱 Plain Room
+        # Plain Room
         # =============================
         elif isinstance(room, PlainRoom):
             if random.random() < 0.2:
@@ -179,6 +183,7 @@ class Game:
     # TIRAGE DES PIÈCES (partie 2.7)
     # =============================
     def draw_three_rooms(self, r: int, c: int, direction: Direction) -> list:
+        """Tire trois pièces possibles pour une position donnée, en appliquant rareté et modificateurs."""
         possible_rooms = [
             PlainRoom(), Kitchen(), Pantry(), LockerRoom(), UtilityRoom(),
             Garden(), Armory(), Library(), Furnace(), Greenhouse(),
@@ -253,6 +258,7 @@ class Game:
         return selected_rooms
 
     def retry_draw(self, r: int, c: int, direction: Direction) -> list:
+        """Re-tire trois pièces si le joueur a des dés disponibles, en consommant un dé."""
         # Re-tire 3 salles si le joueur a des dés (dice > 0), et consomme 1 dé
         if self.player.inventory.dice <= 0:
             return []
@@ -309,6 +315,7 @@ class Game:
     # DÉPLACEMENT / INTERACTIONS
     # =============================
     def move(self, d: Direction) -> bool:
+        """Tente de déplacer le joueur via une porte dans la direction donnée et applique l'effet de la nouvelle salle."""
         # Se déplacer via une porte ouverte; consomme 1 step.
         cur_cell = self.manor.cell(self.player.pos)
         door = cur_cell.doors.get(d)
@@ -340,12 +347,14 @@ class Game:
         return True
 
     def reached_exit(self) -> bool:
+        """Indique si le joueur a atteint la salle objectif du manoir."""
         return self.player.pos == self.manor.goal
 
     # =============================
     # OBJETS
     # =============================
     def place_object_at(self, coord, obj) -> bool:
+        """Place un objet dans la salle à la coordonnée donnée si elle existe."""
         # Place un objet dans la room à coord. Retourne False si pas de room.
         if not self.manor.in_bounds(coord):
             return False
@@ -356,7 +365,8 @@ class Game:
         return True
 
     def pick_up_here(self) -> str | None:
-        # Interagit avec le premier objet de la room du joueur; retire s'il est consommé.
+        """Interagit avec le premier objet de la salle du joueur et le retire s'il est consommé."""
+        
         cell = self.manor.cell(self.player.pos)
         if not cell.room or not cell.room.contents:
             return None
@@ -370,6 +380,7 @@ class Game:
     # VERROUILLAGE (2.8)
     # =============================
     def _random_lock_for_row(self, row: int) -> LockLevel:
+        """Retourne un niveau de verrouillage aléatoire pour une rangée donnée du manoir."""
         # Tire aléatoirement le niveau de verrouillage d'une porte en fonction
         # de la rangée (0 = haut / 8 = bas).
         row = max(0, min(self.manor.rows - 1, row))  # sécurité
@@ -430,6 +441,7 @@ class Game:
         return LockLevel.UNLOCKED
 
     def _unlock_both_sides(self, from_coord: Coord, d: Direction) -> None:
+        """Met la porte traversée et sa porte jumelle en état UNLOCKED."""
         # """Met la porte traversée ET sa porte jumelle en UNLOCKED."""
         cur_cell = self.manor.cell(from_coord)
         door = cur_cell.doors.get(d)
@@ -455,9 +467,11 @@ class Game:
     # PARTIE 2.7 / 2.8
     # =============================
     def get_current_room_choices(self) -> list:
+        """Retourne la liste des salles actuellement proposées au joueur."""
         return self.current_room_choices
 
     def choose_room(self, index: int) -> bool:
+        """Valide et place la salle choisie parmi les tirages courants, si les conditions sont remplies."""
         if not self.current_room_choices or not 0 <= index < len(self.current_room_choices):
             return False
 
@@ -483,7 +497,8 @@ class Game:
         return True
 
     def redraw_rooms(self) -> bool:
-        # Re-tire une nouvelle série de 3 salles pour la même position/direction, en consommant 1 dé
+        """Retire une nouvelle série de trois salles pour la même position/direction en consommant un dé."""
+        
         if not self.current_draw_position or not self.current_draw_direction:
             return False
 
@@ -498,5 +513,3 @@ class Game:
 
         self.current_room_choices = new_choices
         return True
-    
-    

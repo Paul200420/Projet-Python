@@ -7,6 +7,7 @@ from items.permanent_item import PermanentItem
 
 @dataclass
 class Door:
+    """Représente une porte reliant deux salles, avec un niveau de verrouillage et une destination."""
     _lock: LockLevel
     _leads_to: Coord
 
@@ -27,6 +28,7 @@ class Door:
         self._leads_to = value
 
     def can_open(self, inv: Inventory) -> bool:
+        """Vérifie si le joueur possède les moyens d’ouvrir la porte (clé ou outil approprié)."""
         if self._lock == LockLevel.UNLOCKED:
             return True
         if self._lock == LockLevel.LOCKED and PermanentItem.LOCKPICK_KIT in inv.tools:
@@ -34,7 +36,7 @@ class Door:
         return inv.keys > 0
 
     def open(self, inv: Inventory) -> bool:
-        """Consomme une clé si nécessaire (sauf lockpick sur niveau 1)."""
+        """Tente d’ouvrir la porte et consomme une clé si nécessaire."""
         if self._lock == LockLevel.UNLOCKED:
             return True
         if self._lock == LockLevel.LOCKED and PermanentItem.LOCKPICK_KIT in inv.tools:

@@ -10,6 +10,7 @@ from objects.interactive import Chest, Vendor  #: Vendor pour le shop dans kitch
 
 
 def run():
+    """Lance la version graphique du jeu et gère la boucle d'événements Pygame."""
     manor = Manor()
     game = Game(manor)
 
@@ -148,7 +149,7 @@ def run():
                                 renderer.error_message = f"Déplacement réussi (-1 pas). Pas restants : {game.player.inventory.steps}"
 
                                 if game.reached_exit():
-                                    renderer.error_message = "🎉 Vous avez atteint l'antichambre !"
+                                    renderer.error_message = "Vous avez atteint l'antichambre !"
                                     renderer.draw()
                                     pygame.time.wait(1800)
                                     pygame.quit(); sys.exit(0)

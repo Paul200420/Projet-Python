@@ -7,6 +7,7 @@ from enums.room_colors import CouleurPiece
 
 @dataclass
 class Room(ABC):
+    """Classe de base abstraite pour toutes les salles du manoir."""
     _name: str
     _contents: List["GameObject"] = field(default_factory=list)
     _image_path: str = ""
@@ -28,10 +29,12 @@ class Room(ABC):
     ###---------- Getters 2.4 ----------
     @property
     def couleur(self) -> CouleurPiece:
+        """Retourne la couleur de la pièce (catégorie de room)."""
         return self._couleur
 
     @property
     def effet_texte(self) -> str:
+        """Retourne la description textuelle de l'effet de la pièce."""
         return self._effet_texte
 
     #2.4###########Paul
@@ -134,4 +137,5 @@ class Room(ABC):
     
     
     def on_drawn(self, game): 
+        """Callback optionnel quand la salle est simplement tirée parmi les choix (sans y entrer)."""
         pass

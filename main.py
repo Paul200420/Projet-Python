@@ -4,6 +4,7 @@ from enums.direction import Direction
 from items.permanent_item import PermanentItem
 
 def main():
+    """Lance une version console de démonstration : exploration automatique vers le haut avec un kit de crochetage."""
     manor = Manor()
     game = Game(manor)
 

@@ -3,13 +3,14 @@ from dataclasses import dataclass
 from typing import Optional, Protocol
 
 class Interactable(Protocol):
+    """Protocole décrivant les objets pouvant être interagés dans une room."""
     def on_interact(self, game: "Game") -> str: ...
     @property
     def consumed(self) -> bool: ...
 
 @dataclass
 class GameObject:
-    """Base générique pour tout objet posé dans une room (consommable, permanent, etc.)."""
+    """Base générique pour tout objet présent dans une room (consommable, permanent, interactif)."""
     _name: str
     _image_path: Optional[str] = None
     _consumed: bool = False
@@ -39,5 +40,5 @@ class GameObject:
         self._consumed = value
 
     def on_interact(self, game: "Game") -> str:
-        """Action quand le joueur interagit (ramasse / utilise). Retourne un court message UI."""
+        """Action exécutée lorsque le joueur interagit avec l’objet."""
         raise NotImplementedError

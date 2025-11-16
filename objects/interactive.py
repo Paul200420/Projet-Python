@@ -14,45 +14,53 @@ class InteractiveObject(GameObject):
     """
     Classe de base pour les objets interactifs (coffres, spots, casiers).
     """
-    _required_tools: List[PermanentItem] = field(default_factory=list)   # outils permanents nécessaires (ex: marteau)
+    _required_tools: List[PermanentItem] = field(default_factory=list)   # outils permanents nécessaires comme le hammer
     _can_use_key: bool = False                                           # est-ce qu'une clé peut être utilisée
     _loot_table: List[GameObject] = field(default_factory=list)          # objets possibles
     _can_be_empty: bool = False                                          # l'objet peut-il être vide ?
 
     @property
     def required_tools(self) -> List[PermanentItem]:
+        """Retourne la liste des outils permanents nécessaires pour ouvrir cet objet."""
         return self._required_tools
 
     @required_tools.setter
     def required_tools(self, value: List[PermanentItem]) -> None:
+        """Définit la liste des outils permanents nécessaires pour ouvrir cet objet."""
         self._required_tools = value
 
     @property
     def can_use_key(self) -> bool:
+        """Indique si une clé peut être utilisée pour ouvrir cet objet."""
         return self._can_use_key
 
     @can_use_key.setter
     def can_use_key(self, value: bool) -> None:
+        """Active ou désactive l'utilisation d'une clé pour ouvrir cet objet."""
         self._can_use_key = value
 
     @property
     def loot_table(self) -> List[GameObject]:
+        """Retourne la table de butin utilisée pour générer le contenu de l'objet."""
         return self._loot_table
 
     @loot_table.setter
     def loot_table(self, value: List[GameObject]) -> None:
+        """Définit la table de butin possible pour cet objet."""
         self._loot_table = value
 
     @property
     def can_be_empty(self) -> bool:
+        """Indique si cet objet peut éventuellement être vide."""
         return self._can_be_empty
 
     @can_be_empty.setter
     def can_be_empty(self, value: bool) -> None:
+        """Permet de préciser si l'objet peut être vide ou non."""
         self._can_be_empty = value
 
     def can_interact(self, game: "Game") -> bool:
-        """Vérifie si le joueur peut interagir avec cet objet"""
+        """Vérifie si le joueur peut interagir avec cet objet."""
         inv = game.player.inventory
         has_required_tool = any(tool in inv.tools for tool in self._required_tools)
         has_key = inv.keys > 0 if self._can_use_key else False
@@ -113,6 +121,7 @@ class InteractiveObject(GameObject):
         return items[idx]
 
     def on_interact(self, game: "Game") -> str:
+        """Tente d'ouvrir l'objet, génère le loot si possible et le place dans la salle."""
         if self.consumed:
             return f"{self.name} est déjà vide."
 
@@ -211,6 +220,7 @@ class Vendor(InteractiveObject):
 
     # -------- affichage dans le panneau --------
     def get_catalog_lines(self) -> list[str]:
+        """Retourne les lignes de texte décrivant les articles disponibles à l'achat."""
         lines = []
         for idx, (name, price, _give) in enumerate(self.catalog, start=1):
             lines.append(f"{idx}) {name} ({price} or)")
@@ -218,6 +228,7 @@ class Vendor(InteractiveObject):
 
     # -------- achat appelé depuis main_graphiqc --------
     def buy_item(self, game: "Game", index_1based: int) -> str:
+        """Tente d'acheter l'article d'indice donné dans le catalogue et applique son effet."""
         if index_1based < 1 or index_1based > len(self.catalog):
             return "Article inexistant."
 
@@ -245,4 +256,5 @@ class Vendor(InteractiveObject):
 
     
     def on_interact(self, game: "Game") -> str:
+        """Message générique lorsqu'on interagit avec le comptoir sans acheter."""
         return "Comptoir du magasin."

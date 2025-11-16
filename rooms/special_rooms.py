@@ -1,12 +1,11 @@
 from __future__ import annotations
 from dataclasses import dataclass
 import random
-
 from rooms.room_base import Room
 from enums.direction import Direction
 from enums.room_colors import CouleurPiece
 from models.coord import Coord
-from typing import Type  # si pas déjà importé en haut
+from typing import Type  
 # objets interactifs / shop
 from objects.interactive import Chest, Vendor
 

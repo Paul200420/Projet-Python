@@ -1,6 +1,7 @@
 from enum import Enum, auto
 
 class PermanentItem(Enum):
+    """Types d'objets permanents que le joueur peut posséder dans son inventaire."""
     SHOVEL = auto()
     HAMMER = auto()
     LOCKPICK_KIT = auto()

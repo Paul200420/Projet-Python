@@ -31,24 +31,34 @@ class Permanent(GameObject):
 # ---- Sous-classes concrètes (pratique pour placer par type + image dédiée) ----
 
 class ShovelObj(Permanent):
+    """Objet permanent représentant la pelle (SHOVEL)."""
     def __init__(self, image_path: Optional[str] = "assets/rooms/items/shovel.png"):
         super().__init__(_name="Shovel", _image_path=image_path, _tool=PermanentItem.SHOVEL)
 
+
 class HammerObj(Permanent):
+    """Objet permanent représentant le marteau (HAMMER)."""
     def __init__(self, image_path: Optional[str] = "assets/rooms/items/hammer.png"):
         super().__init__(_name="Hammer", _image_path=image_path, _tool=PermanentItem.HAMMER)
 
+
 class LockpickKitObj(Permanent):
+    """Objet permanent représentant le kit de crochetage (LOCKPICK_KIT)."""
     def __init__(self, image_path: Optional[str] = "assets/rooms/items/lockpick.png"):
         super().__init__(_name="Lockpick Kit", _image_path=image_path, _tool=PermanentItem.LOCKPICK_KIT)
 
+
 class MetalDetectorObj(Permanent):
+    """Objet permanent représentant le détecteur de métal (METAL_DETECTOR)."""
     def __init__(self, image_path: Optional[str] = "assets/rooms/items/metal_detector.png"):
         super().__init__(_name="Metal Detector", _image_path=image_path, _tool=PermanentItem.METAL_DETECTOR)
 
+
 class RabbitFootObj(Permanent):
+    """Objet permanent représentant la patte de lapin (RABBIT_FOOT)."""
     def __init__(self, image_path: Optional[str] = "assets/rooms/items/rabbit_foot.png"):
         super().__init__(_name="Rabbit Foot", _image_path=image_path, _tool=PermanentItem.RABBIT_FOOT)
+
 
 class SmallBusinessObj(Permanent):
     """Fragment qui se transforme en clé une fois qu'on en a collecté 10."""
@@ -56,6 +66,7 @@ class SmallBusinessObj(Permanent):
         super().__init__(_name="Small Business", _image_path=image_path, _tool=PermanentItem.SMALL_BUSINESS)
 
     def on_interact(self, game: "Game") -> str:
+        """Ajoute un fragment Small Business et gère la conversion automatique en clé."""
         if self.consumed:
             return f"{self.name} déjà ramassé."
         

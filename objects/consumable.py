@@ -4,7 +4,7 @@ from objects.base import GameObject
 
 @dataclass
 class Consumable(GameObject):
-    """Objet qui augmente directement les pas du joueur quand il est ramassé."""
+    """Objet consommable offrant un gain immédiat de pas au joueur lorsqu'il est ramassé."""
     _steps_gain: int = 0
 
     @property
@@ -25,21 +25,30 @@ class Consumable(GameObject):
 
 
 class Apple(Consumable):
+    """Pomme rapportant un faible gain de pas."""
     def __init__(self, image_path: str = "assets/rooms/items/apple.png"):
         super().__init__(_name="Apple", _image_path=image_path, _steps_gain=2)
 
+
 class Banana(Consumable):
+    """Banane augmentant légèrement le nombre de pas."""
     def __init__(self, image_path: str = "assets/rooms/items/banana.png"):
         super().__init__(_name="Banana", _image_path=image_path, _steps_gain=3)
 
+
 class Cake(Consumable):
+    """Gâteau offrant un gain de pas plus conséquent."""
     def __init__(self, image_path: str = "assets/rooms/items/cake.png"):
         super().__init__(_name="Cake", _image_path=image_path, _steps_gain=10)
 
+
 class Sandwich(Consumable):
+    """Sandwich procurant un bon regain d’énergie (pas)."""
     def __init__(self, image_path: str = "assets/rooms/items/sandwich.png"):
         super().__init__(_name="Sandwich", _image_path=image_path, _steps_gain=15)
 
+
 class Meal(Consumable):
+    """Repas complet ajoutant un grand nombre de pas."""
     def __init__(self, image_path: str = "assets/rooms/items/meal.png"):
         super().__init__(_name="Meal", _image_path=image_path, _steps_gain=25)
